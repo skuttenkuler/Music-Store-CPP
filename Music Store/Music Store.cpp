@@ -36,6 +36,7 @@ public:
 //functions
 
 void ShowAllItems();
+void ShowInStock();
 
 int main()
 {
@@ -53,8 +54,9 @@ int main()
 
     std::cout << "Welcome to the Music Store" << std::endl;
     std::cout << "Main Menu" << std::endl;
-    std::cout << "1. See All Music." << std::endl;
-    std::cout << "2. Exit." << std::endl;
+    std::cout << "1. See Inventory." << std::endl;
+    std::cout << "2. Currently stocked items." << std::endl;
+    std::cout << "3. Exit." << std::endl;
     std::cin >> menuChoice;
 
 
@@ -65,6 +67,9 @@ int main()
         ShowAllItems();
         break;
     case 2:
+        ShowInStock();
+        break;
+    case 3:
     ExitProgram:
         //check for input
         std::cout << "Quit? (y/N)";
@@ -109,6 +114,9 @@ void ShowAllItems()
 
     char choice;
 
+    std::cout << "Welcome To Music Store" << std::endl;
+    std::cout << "Here's our inventory." << std::endl;
+
     //set query string 
     std::string query = "SELECT * FROM music_store_inventory";
     const char* q = query.c_str();
@@ -139,7 +147,51 @@ void ShowAllItems()
     }
 
 }
-//show only items in stock
+
+//show only items in stocks
+void ShowInStock()
+{
+    system("CLS");
+
+    char choice;
+
+    std::cout << "Welcome To Music Store" << std::endl;
+    std::cout << "Here's what's in stock." << std::endl;
+
+    //set query string 
+    std::string query = "SELECT * FROM music_store_inventory";
+    const char* q = query.c_str();
+    querystate = mysql_query(connection, q);
+    if (!querystate)
+    {
+        res = mysql_store_result(connection);
+        while (row = mysql_fetch_row(res))
+        {
+            if (atoi(row[5]) > 0)
+            {
+                printf("id: %s, artist: %s, album: %s\n", row[0], row[1], row[2]);
+            }
+        }
+    }
+    else
+    {
+        std::cout << "Query Issue" << mysql_errno(connection) << std::endl;
+    }
+    // Exit back to menu
+    std::cout << "Press 'm' to return to main menu." << std::endl;
+    std::cout << "Press anyother key to exit." << std::endl;
+    std::cin >> choice;
+    if (choice == 'm' || choice == 'M')
+    {
+        main();
+    }
+    else
+    {
+        exit(0);
+    }
+
+
+}
 //show items sold
 //search catalog
 //Add new item
