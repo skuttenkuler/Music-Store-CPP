@@ -3,7 +3,9 @@
 
 
 #include <mysql.h>
+#include <string>
 #include <iostream>
+#include <sstream>
 //global
 int querystate;
 
@@ -37,6 +39,7 @@ public:
 
 void ShowAllItems();
 void ShowInStock();
+void AddItem();
 
 int main()
 {
@@ -55,8 +58,9 @@ int main()
     std::cout << "Welcome to the Music Store" << std::endl;
     std::cout << "Main Menu" << std::endl;
     std::cout << "1. See Inventory." << std::endl;
-    std::cout << "2. Currently stocked items." << std::endl;
-    std::cout << "3. Exit." << std::endl;
+    std::cout << "2. Currently Stocked Items." << std::endl;
+    std::cout << "3. Add Item to Inventory" << std::endl;
+    std::cout << "4. Exit." << std::endl;
     std::cin >> menuChoice;
 
 
@@ -70,6 +74,9 @@ int main()
         ShowInStock();
         break;
     case 3:
+        AddItem();
+        break;
+    case 4:
     ExitProgram:
         //check for input
         std::cout << "Quit? (y/N)";
@@ -118,7 +125,7 @@ void ShowAllItems()
     std::cout << "Here's our inventory." << std::endl;
 
     //set query string 
-    std::string query = "SELECT * FROM music_store_inventory";
+    std::string query = "SELECT * FROM music_store_table";
     const char* q = query.c_str();
     querystate = mysql_query(connection, q);
     if (!querystate)
@@ -159,7 +166,7 @@ void ShowInStock()
     std::cout << "Here's what's in stock." << std::endl;
 
     //set query string 
-    std::string query = "SELECT * FROM music_store_inventory";
+    std::string query = "SELECT * FROM music_store_table";
     const char* q = query.c_str();
     querystate = mysql_query(connection, q);
     if (!querystate)
@@ -192,11 +199,73 @@ void ShowInStock()
 
 
 }
-//show items sold
-//search catalog
+
+void AddItem() 
+{
+    system("CLS");
+    //set variables for artist, album, genre, price, quantity
+    std::string artist = "";
+    std::string album = "";
+    std::string genre = "";
+    float price = 0.0;
+    int quantity = 0;
+    char choice;
+
+
+
+    std::cout << "Welcome To Music Store" << std::endl;
+    std::cout << "Here's what's in stock." << std::endl;
+    
+    //get inputs
+    std::cin.ignore(1, '\n');
+    std::cout << "Enter Artist:" << std::endl;
+    std::getline(std::cin, artist);
+    std::cout << "Enter Album:" << std::endl;
+    std::getline(std::cin, album);
+    std::cout << "Enter Genre:" << std::endl;
+    std::getline(std::cin, genre);
+    std::cout << "Price:" << std::endl;
+    std::cin >> price;
+    std::cout << "Quantity:" << std::endl;
+    std::cin >> quantity;
+
+ 
+
+    //query string
+    std::stringstream ss;
+       ss << "INSERT INTO * music_store_inventory(artist, ablum, genre, price, category) VALUES (" << artist << "," << album << "," << genre << "," << price << "," << quantity << ")";
+
+    std::string add_query = ss.str();
+    const char* q = add_query.c_str();
+    querystate = mysql_query(connection, q);
+    if (!querystate)
+    {
+        std::cout << "Successfully added item in to database" << std::endl;
+    }
+    else
+    {
+        std::cout << add_query << std::endl;
+        std::cout << "Query Issue" << mysql_errno(connection) << std::endl;
+    }
+    // Exit back to menu
+    std::cout << "Press 'm' to return to main menu." << std::endl;
+    std::cout << "Press anyother key to exit." << std::endl;
+    std::cin >> choice;
+    if (choice == 'm' || choice == 'M')
+    {
+        main();
+    }
+    else
+    {
+        exit(0);
+    }
+
+}
 //Add new item
 //Remove item
 //edit item
+//show items sold
+//search catalog
 //create customer order
 
 
