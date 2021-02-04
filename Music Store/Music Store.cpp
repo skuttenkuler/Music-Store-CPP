@@ -9,7 +9,7 @@
 //global
 int querystate;
 
-MYSQL* connection;
+MYSQL mysql, *connection;
 MYSQL_ROW row;
 MYSQL_RES* res;
 
@@ -133,7 +133,7 @@ void ShowAllItems()
         res = mysql_store_result(connection);
         while (row = mysql_fetch_row(res))
         {
-            printf("id: %s, artist: %s, album: %s\n", row[0], row[1], row[2]);
+            printf("id: %s \t, artist: %s \t, album: %s \t, genre: %s \t, price: %s \t, quantity: %s \t \n", row[0], row[1], row[2], row[3], row[4], row[5]);
         }
     }
     else
@@ -176,7 +176,7 @@ void ShowInStock()
         {
             if (atoi(row[5]) > 0)
             {
-                printf("id: %s, artist: %s, album: %s\n", row[0], row[1], row[2]);
+                printf("id: %s \t, artist: %s \t, album: %s \t, genre: %s \t, price: %s \t, quantity: %s \t \n", row[0], row[1], row[2], row[3], row[4], row[5]);
             }
         }
     }
@@ -202,6 +202,8 @@ void ShowInStock()
 
 void AddItem() 
 {
+    //initialize
+    mysql_init(&mysql);
     system("CLS");
     //set variables for artist, album, genre, price, quantity
     std::string artist = "";
@@ -232,11 +234,10 @@ void AddItem()
  
 
     //query string
-    std::stringstream ss;
-       ss << "INSERT INTO * music_store_inventory(artist, ablum, genre, price, category) VALUES (" << artist << "," << album << "," << genre << "," << price << "," << quantity << ")";
+     //set query string 
+    std::string query = "INSERT INTO * music_store_inventory(artist, ablum, genre, price, category) VALUES ('" + artist + "," + album + "," + genre + "," + price + "," + quantity + "')";
 
-    std::string add_query = ss.str();
-    const char* q = add_query.c_str();
+    const char* q = query.c_str();
     querystate = mysql_query(connection, q);
     if (!querystate)
     {
@@ -244,7 +245,7 @@ void AddItem()
     }
     else
     {
-        std::cout << add_query << std::endl;
+        std::cout << query << std::endl;
         std::cout << "Query Issue" << mysql_errno(connection) << std::endl;
     }
     // Exit back to menu
