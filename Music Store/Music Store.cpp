@@ -231,11 +231,13 @@ void AddItem()
     std::cout << "Quantity:" << std::endl;
     std::cin >> quantity;
 
+    std::string price_string(std::to_string(price));
+    std::string quantity_string(std::to_string(quantity));
  
 
     //query string
      //set query string 
-    std::string query = "INSERT INTO * music_store_inventory(artist, ablum, genre, price, category) VALUES ('" + artist + "," + album + "," + genre + "," + price + "," + quantity + "')";
+    std::string query = "INSERT INTO * music_store_table(artist, album, genre, price, category) VALUES ('" + artist + "," + album + "," + genre + "," + price_string + "," + quantity_string + "')";
 
     const char* q = query.c_str();
     querystate = mysql_query(connection, q);
