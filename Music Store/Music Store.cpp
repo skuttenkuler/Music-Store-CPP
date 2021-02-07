@@ -237,7 +237,7 @@ void AddItem()
 
     //query string
      //set query string 
-    std::string query = "INSERT INTO * music_store_table(artist, album, genre, price, category) VALUES ('" + artist + "," + album + "," + genre + "," + price_string + "," + quantity_string + "')";
+    std::string query = "INSERT INTO music_store_table(artist,album,genre,price,quantity) VALUES ('" + artist + "','" + album + "','" + genre + "','" + price_string + "','" + quantity_string + "')";
 
     const char* q = query.c_str();
     querystate = mysql_query(connection, q);
