@@ -41,6 +41,7 @@ void ShowAllItems();
 void ShowInStock();
 void AddItem();
 void RemoveItem();
+void EditItem();
 
 int main()
 {
@@ -87,6 +88,9 @@ int main()
         RemoveItem();
         break;
     case 5:
+        EditItem();
+        break;
+    case 6:
     ExitProgram:
         //check for input
         std::cout << "Quit? (y/N)";
@@ -287,7 +291,7 @@ void RemoveItem()
     int id_index;
     //boolean check
     bool has_exception = false;
-    bool not_in_database = false;
+    bool not_in_db = false;
 
     std::cout << "Welcome To Music Store" << std::endl;
     std::cout << "Remove Item Menu" << std::endl ;
@@ -338,16 +342,16 @@ void RemoveItem()
         {
             if (str_id != items[i])
             {
-                not_in_database = true;
+                not_in_db = true;
             }
             else
             {
-                not_in_database = false;
+                not_in_db = false;
                 break;
             }
         }
         //if id found
-        if (not_in_database == false)
+        if (not_in_db == false)
         {
             std::string delete_query = "DELETE FROM music_store_table WHERE id = '" + str_id + "'";
             const char* qd = delete_query.c_str();
@@ -388,6 +392,181 @@ void RemoveItem()
     }
 }
 //edit item
+void EditItem()
+{
+    system("cls");
+
+    //variables `artist`,`album`,`genre`,`price`,`quantity`
+    std::string artist = "";
+    std::string album = "";
+    std::string genre = "";
+    float price;
+    int quantity;
+    //music_store_table variables
+    std::string ms_id = "";
+    std::string ms_artist = "";
+    std::string ms_album = "";
+    std::string ms_genre = "";
+    std::string ms_price = "";
+    std::string ms_quantity = "";
+    //list, user choice, exceptions, loop vars
+    std::string items[2000];
+    char choice;
+    bool has_exception = false;
+    bool not_in_db = false;
+    int item_id;
+    int id_index = 0;
+
+    std::cout << "Welcome To Music Store" << std::endl;
+    std::cout << "Edit Item Menu" << std::endl;
+
+    querystate = mysql_query(connection, "SELECT id, artist, album FROM music_store_table");
+    if (!querystate)
+    {
+        res = mysql_store_result(connection);
+        std::cout << "ID\tARTIST\tALBUM\n" << std::endl;
+        while (row = mysql_fetch_row(res))
+        {
+            std::cout << row[0] << "\t" << row[1] << "\t" << row[2] << std::endl;
+            //assign id index to list with items from id row, then increment
+            items[id_index] = row[0];
+            id_index++;
+        }
+    }
+    else 
+    {
+        std::cout << "Query Error!" << mysql_errno(connection) << std::endl;
+
+    }
+    //try function to select get user input of id, if error catch and throw error
+    try
+    {
+        std::cout << std::endl;
+        std::cout << "Enter Item ID:" << std::endl;
+        std::cin >> item_id;
+        std::cout << std::endl;
+    }
+    catch (std::exception e)
+    {
+        std::cout << "Please Enter Valid Selection." << std::endl;
+        has_exception = true;
+        goto ExitProgram;
+    }
+    if (has_exception == false)
+    {
+        std::stringstream stream_id;
+        std::string str_id;
+        stream_id << item_id;
+        stream_id >> str_id;
+
+        //loop to find index id
+        for (int i = 0; i < id_index; i++)
+        {
+            if (str_id != items[i])
+            {
+                not_in_db = true;
+            }
+            else
+            {
+                not_in_db = false;
+                break;
+            }
+        }
+        //if id found
+        if (not_in_db == false)
+        {
+            std::string find_id_query = "SELECT * FROM music_store_table WHERE id = '" + str_id + "'";
+            const char* fq = find_id_query.c_str();
+            querystate = mysql_query(connection, fq);
+
+            if (!querystate)
+            {
+                res = mysql_store_result(connection);
+                std::cout << std::endl;
+                while (row = mysql_fetch_row(res))
+                {
+                    std::cout << "ID: " << row[0] << "\nArtist: " << row[1] << "\nAlbum: " << row[2] << "\nGenre: " << row[3] << "\nPrice: " << row[4] << "\nQuantity: " << row[5] << std::endl;
+                    ms_id = row[0];
+                    ms_artist = row[1];
+                    ms_album = row[2];
+                    ms_genre = row[3];
+                    ms_price = row[4];
+                    ms_quantity = row[5];
+                }
+            }
+            else
+            {
+                std::cout << "Edit Failed.." << mysql_errno(connection) << std::endl;
+            }
+        }
+        std::cin.ignore(1, '\n');
+        std::cout << "Enter Artist (x to not change): ";
+        std::getline(std::cin, artist);
+        if (artist == "x")
+        {
+            artist = ms_artist;
+        }
+        std::cout << "Enter Album (x to not change): ";
+        std::getline(std::cin, album);
+        if (album == "x")
+        {
+            album = ms_album;
+        }
+        std::cout << "Enter Genre (x to not change): ";
+        std::getline(std::cin, genre);
+        if (genre == "x")
+        {
+            genre = ms_genre;
+        }
+        std::cout << "Enter Price (x to not change): ";
+        std::cin >> price;
+  
+        if (price_x = x)
+        {
+            price = ms_price;
+        }
+        std::cout << "Enter Quantity (x to not change): ";
+        std::cin >> quantity;
+        
+        if (quantity == "x")
+        {
+            quantity = ms_quantity;
+        }
+
+        //update query string
+        std::string update_query = "UPDATE music_store_table SET artist = '" + artist + "', album = '" + album + "', genre = '" + genre + "', price = 'price', quantity = 'quantity')";
+        const char* uq = update_query.c_str();
+        querystate = mysql_query(coneection, uq);
+
+        if (!querystate)
+        {
+            std::cout << "Update Successful!" std::endl;
+        }
+        else
+        {
+            std::cout << "Update Failed.." << mysql_errno(connection) << std::endl;
+        }
+    }
+    // Exit back to menu
+    ExitProgram:
+    std::cout << "Press 'm' to return to main menu." << std::endl;
+    std::cout << "Press 'e' to edit another item." << std::endl;
+    std::cout << "Press anyother key to exit." << std::endl;
+    std::cin >> choice;
+    if (choice == 'm' || choice == 'M')
+    {
+        main();
+    }
+    else if (choice == 'e' || choice == 'E')
+    {
+        EditItem();
+    }
+    else
+    {
+        exit(0);
+    }
+
+}
 //show items sold
 //search catalog
 //create customer order
