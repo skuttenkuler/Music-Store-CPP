@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <typeinfo>
 //global
 int querystate;
 
@@ -41,7 +42,7 @@ void ShowAllItems();
 void ShowInStock();
 void AddItem();
 void RemoveItem();
-void EditItem();
+void UpdateItem();
 
 int main()
 {
@@ -63,11 +64,11 @@ int main()
     std::cout << "2. Currently Stocked Items." << std::endl;
     std::cout << "3. Add Item to Inventory." << std::endl;
     std::cout << "4. Delete an Item." << std::endl;
-    //std::cout << "4. Edit Iventory." << std::endl;
+    std::cout << "5. Update an Item." << std::endl;
     //std::cout << "5. Display Items Sold." << std::endl;
     //std::cout << "6. Search Catalog." << std::endl;
     //std::cout << "7. Create Customer Order." << std::endl;
-    //std::cout << "8. Exit." << std::endl;
+    std::cout << "8. Exit." << std::endl;
     
     std::cin >> menuChoice;
 
@@ -88,9 +89,9 @@ int main()
         RemoveItem();
         break;
     case 5:
-        EditItem();
+        UpdateItem();
         break;
-    case 6:
+    case 8:
     ExitProgram:
         //check for input
         std::cout << "Quit? (y/N)";
@@ -392,7 +393,7 @@ void RemoveItem()
     }
 }
 //edit item
-void EditItem()
+void UpdateItem()
 {
     system("cls");
 
@@ -400,8 +401,8 @@ void EditItem()
     std::string artist = "";
     std::string album = "";
     std::string genre = "";
-    float price;
-    int quantity;
+    std::string price = "";
+    std::string quantity = "";
     //music_store_table variables
     std::string ms_id = "";
     std::string ms_artist = "";
@@ -492,6 +493,7 @@ void EditItem()
                     ms_genre = row[3];
                     ms_price = row[4];
                     ms_quantity = row[5];
+                    //std::cout << typeid(ms_price).name() << std::endl;
                 }
             }
             else
@@ -519,28 +521,30 @@ void EditItem()
             genre = ms_genre;
         }
         std::cout << "Enter Price (x to not change): ";
-        std::cin >> price;
+        std::getline(std::cin, price);
   
-        if (price_x = x)
+        if (price == "x")
         {
+            //convert string to float
             price = ms_price;
         }
         std::cout << "Enter Quantity (x to not change): ";
-        std::cin >> quantity;
+        std::getline(std::cin, quantity);
         
         if (quantity == "x")
         {
+            //convert string to int
             quantity = ms_quantity;
         }
 
         //update query string
-        std::string update_query = "UPDATE music_store_table SET artist = '" + artist + "', album = '" + album + "', genre = '" + genre + "', price = 'price', quantity = 'quantity')";
+        std::string update_query = "UPDATE music_store_table SET artist = '" + artist + "', album = '" + album + "', genre = '" + genre + "', price = '" + price + "', quantity = '" + quantity + "' WHERE id = '" + str_id + "'";
         const char* uq = update_query.c_str();
-        querystate = mysql_query(coneection, uq);
+        querystate = mysql_query(connection, uq);
 
         if (!querystate)
         {
-            std::cout << "Update Successful!" std::endl;
+            std::cout << "Update Successful!" << std::endl;
         }
         else
         {
@@ -559,7 +563,7 @@ void EditItem()
     }
     else if (choice == 'e' || choice == 'E')
     {
-        EditItem();
+        UpdateItem();
     }
     else
     {
